@@ -18,7 +18,7 @@ package io.geekidea.springbootplus.test;
 
 import com.example.foobar.entity.FooBar;
 import com.example.foobar.mapper.FooBarMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

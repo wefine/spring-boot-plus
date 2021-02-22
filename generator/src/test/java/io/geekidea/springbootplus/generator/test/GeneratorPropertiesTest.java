@@ -18,11 +18,9 @@ package io.geekidea.springbootplus.generator.test;
 
 import io.geekidea.springbootplus.generator.CodeGenerator;
 import io.geekidea.springbootplus.generator.properties.GeneratorProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * 生成代码配置文件读取测试
@@ -30,7 +28,6 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author geekidea
  * @date 2020/3/12
  **/
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = GeneratorTestApplication.class)
 public class GeneratorPropertiesTest {
 

@@ -19,9 +19,11 @@ package io.geekidea.springbootplus.config;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
+
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Function;
+
 import io.geekidea.springbootplus.config.properties.SwaggerProperties;
 import io.geekidea.springbootplus.framework.common.exception.SpringBootPlusConfigException;
 import io.swagger.annotations.Api;
@@ -53,7 +55,7 @@ import springfox.documentation.spi.schema.contexts.ModelPropertyContext;
 import springfox.documentation.spring.web.plugins.ApiSelectorBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -78,7 +80,7 @@ import static springfox.documentation.swagger.schema.ApiModelProperties.findApiM
  */
 @Slf4j
 @Configuration
-@EnableSwagger2
+@EnableSwagger2WebFlux
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
 @ConditionalOnProperty(value = {"knife4j.enable"}, matchIfMissing = true)
@@ -193,9 +195,9 @@ public class Swagger2Config {
         return parameters;
     }
 
-
     public static Predicate<RequestHandler> basePackage(final String[] basePackages) {
-        return input -> declaringClass(input).transform(handlerPackage(basePackages)).or(true);
+        return input -> declaringClass(input).isPresent() ?
+                handlerPackage(basePackages).apply(declaringClass(input).get()) : true;
     }
 
     private static Function<Class<?>, Boolean> handlerPackage(final String[] basePackages) {
@@ -213,7 +215,7 @@ public class Swagger2Config {
 
     @SuppressWarnings("deprecation")
     private static Optional<? extends Class<?>> declaringClass(RequestHandler input) {
-        return Optional.fromNullable(input.declaringClass());
+        return java.util.Optional.ofNullable(input.declaringClass());
     }
 
     /**
@@ -225,16 +227,16 @@ public class Swagger2Config {
         @Override
         public void apply(ModelPropertyContext context) {
             try {
-                Optional<BeanPropertyDefinition> beanPropertyDefinitionOptional = context.getBeanPropertyDefinition();
-                Optional<ApiModelProperty> annotation = Optional.absent();
+                Optional<BeanPropertyDefinition> definitionOptional = context.getBeanPropertyDefinition();
+                Optional<ApiModelProperty> annotation = Optional.empty();
                 if (context.getAnnotatedElement().isPresent()) {
-                    annotation = annotation.or(findApiModePropertyAnnotation(context.getAnnotatedElement().get()));
+                    annotation = findApiModePropertyAnnotation(context.getAnnotatedElement().get());
                 }
                 if (context.getBeanPropertyDefinition().isPresent()) {
-                    annotation = annotation.or(findPropertyAnnotation(context.getBeanPropertyDefinition().get(), ApiModelProperty.class));
+                    annotation = findPropertyAnnotation(context.getBeanPropertyDefinition().get(), ApiModelProperty.class);
                 }
-                if (beanPropertyDefinitionOptional.isPresent()) {
-                    BeanPropertyDefinition beanPropertyDefinition = beanPropertyDefinitionOptional.get();
+                if (definitionOptional.isPresent()) {
+                    BeanPropertyDefinition beanPropertyDefinition = definitionOptional.get();
                     if (annotation.isPresent() && annotation.get().position() != 0) {
                         return;
                     }

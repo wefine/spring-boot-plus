@@ -17,15 +17,12 @@
 package io.geekidea.springbootplus.test;
 
 import io.geekidea.springbootplus.SpringBootPlusApplication;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * @author geekidea
  * @date 2020/3/16
  **/
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootPlusApplication.class)
 public class BaseTest {
 }
